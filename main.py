@@ -28,7 +28,8 @@ def userInput():
                    or "john", "john@abc.xyz", 08012345678
             """
   print(input_msg)
-  contact=input()
+  #contact=input()
+  contact=input("Enter contact's details: ")
   
   if ("," in contact):
     return contact.split(",")
