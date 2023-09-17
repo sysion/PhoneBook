@@ -67,7 +67,7 @@ class ManagePhoneContact:
   def __init__(self):
     self.root={}
 
-  def savePhoneContact(self,phonecontact):
+  def savePhoneContact(self,phonecontact,editflag=False):
     f=self._loadDatabase('a')
     #self._checkPhoneNum(phonecontact.phoneno)
     print(self._checkPhoneNum(phonecontact.phoneno))
@@ -78,13 +78,41 @@ class ManagePhoneContact:
       #print("Record saved to file: "+phonecontact.name)
       #print(f"Database file is: {dbfilepath}")   # debugging purpose
     else:
-      print("Phone number already exists in database, aborting save . . .")
+      if not (editflag):
+        print("Phone number already exists in database, aborting save . . .")
+      else:
+        f.write(phonecontact.toString())
+        f.close()
+        print("Record updated")
 
-  def editPhoneContact(self,phonecontact):
+  def editPhoneContact(self,name,email,phoneno):
     print("Editing record")
+    lines=self._checkName(name)
+    if (len(lines)==1):
+      info=lines.split(",")
+      self.savePhoneContact(info[0],info[1],info[2],True)
+    elif (len(lines)>1):
+      for line in lines:
+        info=line.split(",")
+        if (info[2]==phoneno):
+          self.savePhoneContact(info[0],info[1],info[2],True)
+          break
+    else:
+      print("Phone contact not in database, nothing to edit")
 
-  def deletePhoneContact(self,phonecontact):
-    print("Record deleted")
+  def deletePhoneContact(self,name,email,phoneno):
+    lines=self._checkName(name)
+    if (len(lines)==1):
+      pass 
+    elif (len(lines)>1):
+      for line in lines:
+        info=line.split(",")
+        if (info[2]==phoneno):
+          pass
+          break
+      print("Record deleted")
+    else:
+      print("Phone contact not in database, nothing to delete")
 
   def showPhoneContact(self):
     print("Records displayed")
@@ -108,3 +136,16 @@ class ManagePhoneContact:
     print(phonedata)
 
     return(phoneno in phonedata)
+
+  def _checkName(self,name):
+    lines=[]
+    print(f"Checking if {name} exists in database")
+    f=self._loadDatabase('r')
+    for line in f:
+      tmp=line
+      if (tmp.strip().split(",")[0]==name):
+        lines.append(line)
+    f.close()
+    print(lines)
+
+    return lines
