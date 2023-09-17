@@ -85,37 +85,50 @@ class ManagePhoneContact:
         f.close()
         print("Record updated")
 
-  def editPhoneContact(self,name,email,phoneno):
+  #def editPhoneContact(self,name,email,phoneno):
+  def editPhoneContact(self,phonecontact):
     print("Editing record")
-    lines=self._checkName(name)
+    lines=self._checkName(phonecontact.name)
     if (len(lines)==1):
       info=lines.split(",")
       self.savePhoneContact(info[0],info[1],info[2],True)
     elif (len(lines)>1):
       for line in lines:
         info=line.split(",")
-        if (info[2]==phoneno):
+        if (info[2]==phonecontact.phoneno):
           self.savePhoneContact(info[0],info[1],info[2],True)
           break
     else:
       print("Phone contact not in database, nothing to edit")
 
-  def deletePhoneContact(self,name,email,phoneno):
-    lines=self._checkName(name)
+  #def deletePhoneContact(self,name,email,phoneno):
+  def deletePhoneContact(self,phonecontact):
+    lines=self._checkName(phonecontact.name)
     if (len(lines)==1):
       pass 
     elif (len(lines)>1):
       for line in lines:
         info=line.split(",")
-        if (info[2]==phoneno):
+        if (info[2]==phonecontact.phoneno):
           pass
           break
       print("Record deleted")
     else:
       print("Phone contact not in database, nothing to delete")
 
-  def showPhoneContact(self):
-    print("Records displayed")
+  def showPhoneContact(self,option):
+    if not (option=="All"):
+      lines=self._checkName(option)
+      if (len(lines)>0):
+        for line in lines:
+          print(line)
+      else:
+        print("Phone contact not in database, nothing to show")
+    else:
+      with open(dbfilepath,'r') as f:
+        [print(line) for line in f]  # ok but put blank line between output
+        #for line in f:               # ok but put blank line between output
+        #  print(line)  
 
   def _loadDatabase(self,mode):          # the preceeding underscore makes the function protected
     print("Loading database . . .")

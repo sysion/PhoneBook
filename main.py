@@ -42,13 +42,14 @@ def userInput():
   print(menu_msg)
 
   # eval added because integer input expected
-  contact=eval(input("Enter selection (1, 2, 3 or 4): ")) 
+  contact=eval(input(" Enter selection (1, 2, 3 or 4): ")) 
   #contact=contact.strip()  # error: int does not have attribute 'strip()'
   #contact=input()
   return contact
 
 def PhoneBookApp():
   contact=userInput()
+  mpc=ManagePhoneContact()
 
   input_msg="""
     ###################################################################################
@@ -58,23 +59,34 @@ def PhoneBookApp():
     #      "john" "john@abc.xyz" 08012345678                                          #
     #   or "john", "john@abc.xyz", 08012345678                                        #
     ###################################################################################\n"""
-  print(input_msg)
 
-  # eval not needed here because string input expected
-  prompt=input("Enter contact's details: ")
-  prompt=splitInput(prompt.strip())
+  show_msg="""
+    ###################################################################################
+    #                1. Enter contact's name to display                               #
+    #                2. Enter "All" to display all contact (without the quotes)       #
+    ###################################################################################\n"""
 
-  pba=createPhoneBook(prompt[0], prompt[1], prompt[2])
-  mpc=ManagePhoneContact()
+  if (contact>0 and contact<4):
+    print(input_msg)
 
-  if (contact==1):
-    mpc.savePhoneContact(pba)
-  elif (contact==2):
-    mpc.editPhoneContact(pba)
-  elif (contact==3):
-    mpc.deletePhoneContact(pba)
+    # eval not needed here because string input expected
+    prompt=input(" Enter contact's details: ")
+    prompt=splitInput(prompt.strip())
+
+    pba=createPhoneBook(prompt[0], prompt[1], prompt[2])
+
+    if (contact==1):
+      mpc.savePhoneContact(pba)
+    elif (contact==2):
+      mpc.editPhoneContact(pba)
+    elif (contact==3):
+      mpc.deletePhoneContact(pba)
   elif (contact==4):
-    mpc.showPhoneContact(pba)
+    print(show_msg)
+    display=input(" Enter contact's details: ")
+    display=display.strip()
+    #print(f"Inside main, display = {display}")
+    mpc.showPhoneContact(display)
 
 
 if __name__ == "__main__":
