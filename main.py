@@ -1,18 +1,21 @@
 from phonecontact import PhoneContact, ManagePhoneContact
 import sys
 
+""" Creates and return PhoneContact object instance """
 def createPhoneBook(name, email, phoneno):
   pba = PhoneContact()
   pba.addAttribute(name, email, phoneno)
 
   return pba
 
+""" Convert user input into a list """
 def splitInput(prompt):
   if ("," in prompt):
     return prompt.split(",")
   else:
     return prompt.split()
 
+""" App starting Menu """
 def userInput():
   menu_msg="""
     ###################################################################################
@@ -31,6 +34,7 @@ def userInput():
 
   return contact
 
+""" Manages execution of selected actions for app """
 def PhoneBookApp(choice):
   contact=choice
   mpc=ManagePhoneContact()
@@ -69,10 +73,10 @@ def PhoneBookApp(choice):
     print(show_msg)
     display=input(" Enter contact's details: ")
     display=display.strip()
-    #print(f"Inside main, display = {display}")
     mpc.showPhoneContact(display)
 
 
+""" App's entry point """
 if __name__ == "__main__":
   choice=userInput()
   while (choice!=5):
