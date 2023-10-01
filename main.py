@@ -1,15 +1,10 @@
 from phonecontact import PhoneContact, ManagePhoneContact
 import sys
 
-#def phonebookApp(name, email, phoneno):
 def createPhoneBook(name, email, phoneno):
-  #pba = PhoneContact("john","john@abc.xyz","08012345678")
-  #print(pba.name,pba.email,pba.phoneno)
   pba = PhoneContact()
   pba.addAttribute(name, email, phoneno)
-  #pba.showContact()
-  #mpc=ManagePhoneContact()
-  #mpc.savePhoneContact(pba)
+
   return pba
 
 def splitInput(prompt):
@@ -19,15 +14,6 @@ def splitInput(prompt):
     return prompt.split()
 
 def userInput():
-  #if (len(sys.argv) < 3):
-  #  #userInput()
-  #  exit(0)
-  #else:
-  #  #{name, email, phoneno} = sys.argv
-  #  name = sys.argv[1]
-  #  email = sys.argv[2]
-  #  phoneno = sys.argv[3]
-  #  return {name, email, phoneno}
   menu_msg="""
     ###################################################################################
     #                          Phone Book (ver 1.0)                                   #
@@ -37,18 +23,16 @@ def userInput():
     #                         2. Edit Contact                                         #
     #                         3. Delete Contact                                       #
     #                         4. Show Contact                                         #
+    #                         5. Quit                                                 #
     #                                                                                 #
     ###################################################################################\n"""
   print(menu_msg)
+  contact=eval(input(" Enter selection (1, 2, 3, 4 or 5): ")) 
 
-  # eval added because integer input expected
-  contact=eval(input(" Enter selection (1, 2, 3 or 4): ")) 
-  #contact=contact.strip()  # error: int does not have attribute 'strip()'
-  #contact=input()
   return contact
 
-def PhoneBookApp():
-  contact=userInput()
+def PhoneBookApp(choice):
+  contact=choice
   mpc=ManagePhoneContact()
 
   input_msg="""
@@ -90,11 +74,7 @@ def PhoneBookApp():
 
 
 if __name__ == "__main__":
-  #print("argv is :"+sys.argv)    # error: can't concatenate list to string
-  #print(sys.argv)
-  #{name, email, phoneno} = userInput()
-
-  #nep = userInput()
-  #print(nep)
-  #phonebookApp(nep[0], nep[1], nep[2])
-  PhoneBookApp()
+  choice=userInput()
+  while (choice!=5):
+    PhoneBookApp(choice)
+    choice=userInput()
