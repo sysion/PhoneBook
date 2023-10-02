@@ -60,8 +60,13 @@ def PhoneBookApp(choice):
     # eval not needed here because string input expected
     prompt=input(" Enter contact's details: ")
     prompt=splitInput(prompt.strip())
+    
+    pba=None
 
-    pba=createPhoneBook(prompt[0], prompt[1], prompt[2])
+    if (len(prompt)==3):
+      pba=createPhoneBook(prompt[0], prompt[1], prompt[2])
+    else:
+      print("Wrong input data or input not following required format")
 
     if (contact==1):
       mpc.savePhoneContact(pba)

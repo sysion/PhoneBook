@@ -1,2 +1,3 @@
 research/
-db/
+db/phonebookfile.db
+db/__pycache__
