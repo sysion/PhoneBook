@@ -51,26 +51,16 @@ class PhoneContact:
     return ",".join([self.getName(),self.getEmail(),self.getPhoneno()])
 
   """ Save new contact to database """
-  #def savePhoneContact(self,pba):
   def savePhoneContact(self,name,email,phoneno):
-    #print(phonecontact.toString())
-    #query="INSERT INTO tblphonecontact VALUES (?,?,?,?)"
     query="INSERT INTO tblphonecontact (name,email,phoneno) VALUES (?,?,?)"
     cursor=dbconn.cursor()
 
     try:
-      #cursor.execute(query,(phonecontact.getName(),phonecontact.getEmail(),phonecontact.getPhoneno()))
       cursor.execute(query,(name,email,phoneno))
       dbconn.commit()
       cursor.close()
       print("Contact saved to database")
     except Error as e:
-      #print(type(e))
-      #print(e)
-      #print(str(e))
-
-      # sqlite3.IntegrityError: UNIQUE constraint failed: tblphonecontact.phoneno
-      # sqlite3.IntegrityError: UNIQUE constraint failed: tblphonecontact.email
       if ('UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e)):
         print('Phone number already in database, nothing to save')
         return
@@ -82,80 +72,20 @@ class PhoneContact:
         return
 
   """ Edit contact and update database with changes """
-  #def editPhoneContact(self,name,email,phoneno):
   def editPhoneContact(self,name):
-    #phonenum=self._checkPhoneNum(phoneno)
-    #print(f'editPhoneContact->phoneno = {phonenum}')
-
+    cid=-1
     rows=self._checkName(name)
-
-    print(f'editPhoneContact->names = {rows}')
-    print(f'editPhoneContact->num_names = {len(rows)}')
-    """
-    editPhoneContact->names = 
-    [(2, 'joy', 'joy@fcmb.com', '08023456789'), 
-    (9, 'joy', 'joy@inter.org', '07023456789'), 
-    (13, 'joy', 'joy@akt.net', '09034567891')]
-    editPhoneContact->num_names = 3
-    """
-
+    
     if (len(rows)==1):
-      #contact=rows[0].split(",")    # tuple object has no attribute split()
-      #ncontact=self._getChanges(contact[1],contact[2],contact[3])
       cid=rows[0][0]
-      print(f'editPhoneContact->ncontact_id = {cid}')
-
-      ncontact=self._getChanges(rows[0][1],rows[0][2],rows[0][3])
-      print(f'editPhoneContact->ncontact = {ncontact}')
-      
-      query="UPDATE tblphonecontact SET name=?,email=?,phoneno=? WHERE _id=?"
-      cursor=dbconn.cursor()
-      try:
-        cursor.execute(query,(ncontact[0],ncontact[1],ncontact[2],cid))
-        dbconn.commit()
-        cursor.close()
-        print("Contact updated in database")
-      except Error as e:
-        #print(e)
-        if ('UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e)):
-          print('Phone number already in database, nothing to update')
-          return
-        elif ('UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e)):
-          print('Email already in database, nothing to update')
-          return
-        else:
-          print('Unknown error when updating contact')
-          return
+      self._updateChanges(rows[0],cid)
     elif (len(rows)>1):
       nrow=self._selectContact(rows)
-      print(f'editPhoneContact->nrow = {nrow}')
-
       cid=nrow[0]
-      print(f'editPhoneContact->ncontact_id = {cid}')
-
-      ncontact=self._getChanges(nrow[1],nrow[2],nrow[3])
-      print(f'editPhoneContact->ncontact = {ncontact}')
-      
-      query="UPDATE tblphonecontact SET name=?,email=?,phoneno=? WHERE _id=?"
-      cursor=dbconn.cursor()
-      try:
-        cursor.execute(query,(ncontact[0],ncontact[1],ncontact[2],cid))
-        dbconn.commit()
-        cursor.close()
-        print("Contact updated in database")
-      except Error as e:
-        #print(e)
-        if ('UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e)):
-          print('Phone number already in database, nothing to update')
-          return
-        elif ('UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e)):
-          print('Email already in database, nothing to update')
-          return
-        else:
-          print('Unknown error when updating contact')
-          return
+      self._updateChanges(nrow,cid)
     else:
       print("Phone contact not in database, nothing to edit")
+      return
 
   """ Delete unwanted contact and update database with changes """
   def deletePhoneContact(self,name):
@@ -179,7 +109,6 @@ class PhoneContact:
       cursor.close()
       print("Contact deleted from database")
     except Error as e:
-      #print(e)
       print(str(e))
       return
 
@@ -193,19 +122,6 @@ class PhoneContact:
       for row in cursor.execute(queryAll):
         print(row)
     else:
-      #print(f'name = {name}')
-      
-      """
-      sqlite3.ProgrammingError: Incorrect number of bindings supplied. 
-      The current statement uses 1, and there are 3 supplied.
-
-      This error occurs when a string parameter is passed to cursor.execute()
-      instead of a list or tuple.
-
-      Solution is to put the string in bracket and add comma to it to make
-      it a tuple e.g. (name,)
-      """
-      #for row in cursor.execute(query,name):    # sqlite3.ProgrammingError: Incorrect number of bindings supplied
       for row in cursor.execute(query,(name,)):
         print(row)
 
@@ -283,7 +199,6 @@ class PhoneContact:
     choice=-1
     while (choice<0 or choice>count):
       try:
-        #choice=eval(input("Enter choice: "))
         choice=input("Enter choice: ")
         choice=choice.strip()
         if (choice==""):
@@ -293,13 +208,29 @@ class PhoneContact:
           choice=eval(choice)
       except Error as e:
         print(str(e))
-        #print(e)
-    
-    #print(f'_selectContact->choice = {choice}')
 
     choice-=1
     return (contacts[choice])
 
-    
+  def _updateChanges(self,row,cid):
+    ncontact=self._getChanges(row[1],row[2],row[3])
+      
+    query="UPDATE tblphonecontact SET name=?,email=?,phoneno=? WHERE _id=?"
+    cursor=dbconn.cursor()
+    try:
+      cursor.execute(query,(ncontact[0],ncontact[1],ncontact[2],cid))
+      dbconn.commit()
+      cursor.close()
+      print("Contact updated in database")
+    except Error as e:
+      if ('UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e)):
+        print('Phone number already in database, nothing to update')
+        return
+      elif ('UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e)):
+        print('Email already in database, nothing to update')
+        return
+      else:
+        print('Unknown error when updating contact')
+        return    
     
     

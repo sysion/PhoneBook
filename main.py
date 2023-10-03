@@ -64,6 +64,7 @@ def PhoneBookApp(choice):
 
       if (len(prompt)==3):
         pba.addAttribute(prompt[0], prompt[1], prompt[2])
+        print(f'PhoneBookApp->pba = {pba.toString()}')
         pba.savePhoneContact(pba.getName(),pba.getEmail(),pba.getPhoneno())
       else:
         print("Wrong input data or input data format")
@@ -73,8 +74,6 @@ def PhoneBookApp(choice):
       prompt=splitInput(prompt.strip())
 
       if (len(prompt)==1):
-        #pba.editPhoneContact(pba)
-        #pba.editPhoneContact(prompt[0], prompt[1], prompt[2])
         pba.editPhoneContact(prompt[0])
       else:
         pass
@@ -84,7 +83,6 @@ def PhoneBookApp(choice):
       prompt=splitInput(prompt.strip())
 
       if (len(prompt)==1):
-        #pba.deletePhoneContact(pba)
         pba.deletePhoneContact(prompt[0])
       else:
         pass
