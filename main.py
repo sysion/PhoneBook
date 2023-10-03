@@ -71,9 +71,9 @@ def PhoneBookApp(choice):
       mpc.deletePhoneContact(pba)
   elif (contact==4):
     print(show_msg)
-    display=input(" Enter contact's details: ")
-    display=display.strip()
-    mpc.showPhoneContact(display)
+    cname=input(" Enter contact's name: ")
+    cname=cname.strip()
+    mpc.showPhoneContact(cname)
 
 
 """ App's entry point """
