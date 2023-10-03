@@ -14,13 +14,13 @@ class PhoneContact:
   def __init__(self):
     pass
 
-  def getName(self,name):
+  def getName(self):
     return self.name
 
-  def getEmail(self,email):
+  def getEmail(self):
     return self.email
 
-  def getPhoneno(self,phoneno):
+  def getPhoneno(self):
     pass
 
   def setName(self,name):
