@@ -1,12 +1,6 @@
 from phonecontact import PhoneContact
 import sys
 
-""" Creates and return PhoneContact object instance """
-def createPhoneBook(name, email, phoneno):
-  pba = PhoneContact(name, email, phoneno)
-
-  return pba
-
 """ Convert user input into a list """
 def splitInput(prompt):
   if ("," in prompt):
@@ -36,7 +30,7 @@ def userInput():
 """ Manages execution of selected actions for app """
 def PhoneBookApp(choice):
   contact=choice
-  pba=None
+  pba=PhoneContact()
 
   input_msg="""
     ###################################################################################
@@ -59,23 +53,25 @@ def PhoneBookApp(choice):
     # eval not needed here because string input expected
     prompt=input(" Enter contact's details: ")
     prompt=splitInput(prompt.strip())
-
-    if (len(prompt)==3):
-      pba=createPhoneBook(prompt[0], prompt[1], prompt[2])
-    else:
-      print("Wrong input data or input data format")
     
     if (contact==1):
-      pba.savePhoneContact(pba)
+      if (len(prompt)==3):
+        pba.addAttribute(prompt[0], prompt[1], prompt[2])
+        pba.savePhoneContact(pba.getName(),pba.getEmail(),pba.getPhoneno())
+      else:
+        print("Wrong input data or input data format")
     elif (contact==2):
-      pba.editPhoneContact(pba)
+      if (len(prompt)==3):
+        #pba.editPhoneContact(pba)
+        pba.editPhoneContact(prompt[0], prompt[1], prompt[2])
     elif (contact==3):
-      pba.deletePhoneContact(pba)
+      if (len(prompt)==1):
+        pba.deletePhoneContact(pba)
   elif (contact==4):
     print(show_msg)
-    display=input(" Enter contact's details: ")
-    display=display.strip()
-    pba.showPhoneContact(display)
+    cname=input(" Enter contact's name: ")
+    cname=cname.strip()
+    pba.showPhoneContact(cname)
 
 
 """ App's entry point """
