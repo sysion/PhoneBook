@@ -17,3 +17,13 @@ def create_connection(dbfilepath):
     print(e)
   
   return conn
+
+
+"""
+def create_table(conn):
+  query="CREATE TABLE IF NOT EXISTS tblphonecontact( \
+  _id INTEGER NOT NULL AUTOINCREMENT PRIMARY KEY, \
+  name TEXT(100) NOT NULL, \
+  email TEXT(100) NOT NULL UNIQUE, \
+  phoneno INTEGER(11) NOT NULL UNIQUE);"
+"""

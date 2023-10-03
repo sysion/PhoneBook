@@ -1,10 +1,12 @@
 """
-phonecontact module containing PhoneContact and ManagePhoneContact
-classes used for phonebook command line application
+phonecontact module containing PhoneContact class 
+used for phonebook command line application with 
+sqlite database
 """
 
 import os
 from db.phonebookdb import create_connection
+from sqlite3 import Error
 
 # get full path to the database file phonebook.db
 dbfilepath=os.path.join(os.path.dirname(os.path.abspath(__file__)),'db/phonebook.db')
@@ -15,57 +17,65 @@ dbconn=create_connection(dbfilepath)
 
 """ PhoneContact class and its methods """
 class PhoneContact:
-  def __init__(self):
-    pass
+  def __init__(self,name, email, phoneno):
+    self.__name=name.strip()
+    self.__email=email.strip()
+    self.__phoneno=phoneno.strip()
 
-  def getName(self,name):
-    return self.name
+  def getName(self):
+    return self.__name
 
-  def getEmail(self,email):
-    return self.email
+  def getEmail(self):
+    return self.__email
 
-  def getPhoneno(self,phoneno):
-    pass
+  def getPhoneno(self):
+    return self.__phoneno
 
   def setName(self,name):
-    self.name=name
+    self.__name=name
 
   def setEmail(self,email):
-    self.email=email
+    self.__email=email
 
   def setPhoneno(self,phoneno):
-    self.phoneno=phoneno
-
-  def addAttribute(self, name, email, phoneno):
-    self.name=name.strip()
-    self.email=email.strip()
-    self.phoneno=phoneno.strip()
+    self.__phoneno=phoneno
 
   def showContact(self):
-    print("Contact's name: "+self.name+", email: "+self.email+", phone number: "+self.phoneno)
+    print("Contact's name: "+self.getName()+", email: "+self.getEmail()+", phone number: "+self.getPhoneno())
 
   def toString(self):
-    return self.name+","+self.email+","+self.phoneno+"\n"
-
-""" ManagePhoneContact class and its methods """
-class ManagePhoneContact:
-  def __init__(self):
-    self.root={}
+    return self.getName()+","+self.getEmail()+","+self.getPhoneno()
+    #return join(",",self.getName(),self.getEmail(),self.getPhoneno())
 
   """ Save new contact to database """
   def savePhoneContact(self,phonecontact):
-    pass
+    #print(phonecontact.toString())
+    #query="INSERT INTO tblphonecontact VALUES (?,?,?,?)"
+    query="INSERT INTO tblphonecontact (name,email,phoneno) VALUES (?,?,?)"
+    cursor=dbconn.cursor()
+
+    try:
+      cursor.execute(query,(phonecontact.getName(),phonecontact.getEmail(),phonecontact.getPhoneno()))
+      print("Contact saved to database")
+    except Error as e:
+      print(e)
+
+    dbconn.commit()
 
   """ Edit contact and update database with changes """
   def editPhoneContact(self,phonecontact):
+    query="SELECT * FROM tblphonecontact WHERE phoneno = ?"
     pass
 
   """ Delete unwanted contact and update database with changes """
   def deletePhoneContact(self,phonecontact):
+    query="SELECT * FROM tblphonecontact WHERE phoneno = ?"
     pass
 
   """ Display All contacts in database or only specified contact """
   def showPhoneContact(self,option):
+    queryAll="SELECT * FROM tblphonecontact"
+    query="SELECT * FROM tblphonecontact WHERE name = ?"
     pass
 
   """ Load contacts in database to computer memory """

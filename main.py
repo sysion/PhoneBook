@@ -1,10 +1,9 @@
-from phonecontact import PhoneContact, ManagePhoneContact
+from phonecontact import PhoneContact
 import sys
 
 """ Creates and return PhoneContact object instance """
 def createPhoneBook(name, email, phoneno):
-  pba = PhoneContact()
-  pba.addAttribute(name, email, phoneno)
+  pba = PhoneContact(name, email, phoneno)
 
   return pba
 
@@ -37,7 +36,7 @@ def userInput():
 """ Manages execution of selected actions for app """
 def PhoneBookApp(choice):
   contact=choice
-  mpc=ManagePhoneContact()
+  pba=None
 
   input_msg="""
     ###################################################################################
@@ -60,25 +59,23 @@ def PhoneBookApp(choice):
     # eval not needed here because string input expected
     prompt=input(" Enter contact's details: ")
     prompt=splitInput(prompt.strip())
-    
-    pba=None
 
     if (len(prompt)==3):
       pba=createPhoneBook(prompt[0], prompt[1], prompt[2])
     else:
-      print("Wrong input data or input not following required format")
-
+      print("Wrong input data or input data format")
+    
     if (contact==1):
-      mpc.savePhoneContact(pba)
+      pba.savePhoneContact(pba)
     elif (contact==2):
-      mpc.editPhoneContact(pba)
+      pba.editPhoneContact(pba)
     elif (contact==3):
-      mpc.deletePhoneContact(pba)
+      pba.deletePhoneContact(pba)
   elif (contact==4):
     print(show_msg)
     display=input(" Enter contact's details: ")
     display=display.strip()
-    mpc.showPhoneContact(display)
+    pba.showPhoneContact(display)
 
 
 """ App's entry point """
