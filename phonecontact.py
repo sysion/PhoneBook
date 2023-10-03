@@ -82,8 +82,8 @@ class PhoneContact:
         return
 
   """ Edit contact and update database with changes """
-  def editPhoneContact(self,name,email,phoneno):
-  #def editPhoneContact(self,name):
+  #def editPhoneContact(self,name,email,phoneno):
+  def editPhoneContact(self,name):
     #phonenum=self._checkPhoneNum(phoneno)
     #print(f'editPhoneContact->phoneno = {phonenum}')
 
@@ -158,10 +158,30 @@ class PhoneContact:
       print("Phone contact not in database, nothing to edit")
 
   """ Delete unwanted contact and update database with changes """
-  def deletePhoneContact(self,phonecontact):
-    query="SELECT * FROM tblphonecontact WHERE phoneno=?"
-    print("Phone contact not in database, nothing to delete")
-    pass
+  def deletePhoneContact(self,name):
+    cid=-1
+    rows=self._checkName(name)
+
+    if (len(rows)==1):
+      cid=rows[0][0]
+    elif (len(rows)>1):
+      nrow=self._selectContact(rows)
+      cid=nrow[0]
+    else:
+      print("Phone contact not in database, nothing to delete")
+      return
+    
+    query="DELETE FROM tblphonecontact WHERE _id=?"
+    cursor=dbconn.cursor()
+    try:
+      cursor.execute(query,(cid,))
+      dbconn.commit()
+      cursor.close()
+      print("Contact deleted from database")
+    except Error as e:
+      #print(e)
+      print(str(e))
+      return
 
   """ Display All contacts in database or only specified contact """
   def showPhoneContact(self,name):
@@ -190,10 +210,6 @@ class PhoneContact:
         print(row)
 
     cursor.close()
-
-  """ Load contacts in database to computer memory """
-  def _loadDatabase(self,mode):
-    pass
 
   """ Check if contact's phone number exists in database """
   def _checkPhoneNum(self,phoneno):
@@ -249,7 +265,7 @@ class PhoneContact:
   def _selectContact(self,contacts):
     select_msg="""
     ###################################################################################
-    #           Select phone contact to EDIT e.g. 1, 2 or 3 . . .                     #
+    #           Select phone contact e.g. 1, 2 or 3 . . .                             #
     ###################################################################################\n"""
 
     e_msg="    ###################################################################################\n"
