@@ -47,7 +47,6 @@ class PhoneContact:
     print("Contact's name: "+self.getName()+", email: "+self.getEmail()+", phone number: "+self.getPhoneno())
 
   def toString(self):
-    #return self.getName()+","+self.getEmail()+","+self.getPhoneno()         # ok
     return ",".join([self.getName(),self.getEmail(),self.getPhoneno()])
 
   """ Save new contact to database """
@@ -175,7 +174,10 @@ class PhoneContact:
     else:
       cphoneno=cphoneno.strip()
 
-    return (cname,cemail,cphoneno)
+    if (cname==name and cemail==email and cphoneno==phoneno):
+      return ""
+    else: 
+      return (cname,cemail,cphoneno)
 
   """ Enables user to select the phone contact to edit or delete """
   def _selectContact(self,contacts):
@@ -214,6 +216,10 @@ class PhoneContact:
 
   def _updateChanges(self,row,cid):
     ncontact=self._getChanges(row[1],row[2],row[3])
+
+    if (ncontact==""):
+      print('Changes not made, nothing to update')
+      return
       
     query="UPDATE tblphonecontact SET name=?,email=?,phoneno=? WHERE _id=?"
     cursor=dbconn.cursor()

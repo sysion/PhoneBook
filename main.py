@@ -25,7 +25,20 @@ def userInput():
   print(menu_msg)
 
   # SyntaxError: unexpected EOF while parsing -> when Enter key pressed alone
-  contact=eval(input(" Enter selection (1, 2, 3, 4 or 5): ")) 
+  #contact=eval(input(" Enter selection (1, 2, 3, 4 or 5): ")) 
+  contact=0
+  while (contact==0 or contact>5):
+    try:
+      contact=input(" Enter selection (1, 2, 3, 4 or 5): ")
+      contact=contact.strip()
+      if (contact==""):
+        contact=0
+        print('Invalid choice . . .\n')
+      else:
+        contact=eval(contact)
+    except:
+      print("Badly formatted input data caused Exception error\n")
+      contact=0
 
   return contact
 
@@ -58,34 +71,32 @@ def PhoneBookApp(choice):
     if (contact==1):
       print(add_msg)
 
-      # eval not needed here because string input expected
       prompt=input(" Enter contact's details: ")
       prompt=splitInput(prompt.strip())
 
       if (len(prompt)==3):
         pba.addAttribute(prompt[0], prompt[1], prompt[2])
-        print(f'PhoneBookApp->pba = {pba.toString()}')
         pba.savePhoneContact(pba.getName(),pba.getEmail(),pba.getPhoneno())
       else:
-        print("Wrong input data or input data format")
+        print("Invalid input data and/or data format")
     elif (contact==2):
       print(edit_del_msg)
       prompt=input(" Enter contact's name: ")
       prompt=splitInput(prompt.strip())
-
+      
       if (len(prompt)==1):
         pba.editPhoneContact(prompt[0])
       else:
-        pass
+        print("Invalid input data")
     elif (contact==3):
       print(edit_del_msg)
       prompt=input(" Enter contact's name: ")
       prompt=splitInput(prompt.strip())
-
+      
       if (len(prompt)==1):
         pba.deletePhoneContact(prompt[0])
       else:
-        pass
+        print("Invalid input data")
   elif (contact==4):
     print(show_msg)
     cname=input(" Enter contact's name: ")
