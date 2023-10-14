@@ -1,27 +1,29 @@
 from gui import Gui
 import tkinter as tk
 
+name=""
+email=""
+phoneno=""
 
-""" App's entry point """
-if __name__ == "__main__":
+def showGui():
   maingui=Gui()
+  name=tk.StringVar()
+  email=tk.StringVar()
+  phoneno=tk.StringVar()
   entry_frame=maingui.createFrame(maingui,0,0,5,5,tk.W)
   lblName=maingui.createLabel(entry_frame,"Name",0,0,1,2,2)
-  entName=maingui.createText(entry_frame,0,1,3,2,2,(tk.N,tk.W,tk.S,tk.E))
+  entName=maingui.createText(entry_frame,0,1,3,2,2,(tk.N,tk.W,tk.S,tk.E),name)
 
   lblEmail=maingui.createLabel(entry_frame,"Email",1,0,1,2,2)
-  entEmail=maingui.createText(entry_frame,1,1,3,2,2,(tk.N,tk.W,tk.S,tk.E))
+  entEmail=maingui.createText(entry_frame,1,1,3,2,2,(tk.N,tk.W,tk.S,tk.E),email)
 
   lblPhone=maingui.createLabel(entry_frame,"Phone",2,0,1,2,2)
-  entPhone=maingui.createText(entry_frame,2,1,3,2,2,(tk.N,tk.W,tk.S,tk.E))
+  entPhone=maingui.createText(entry_frame,2,1,3,2,2,(tk.N,tk.W,tk.S,tk.E),phoneno)
 
-  lblPhone=maingui.createLabel(entry_frame,"Phone",2,0,1,2,2)
-  entPhone=maingui.createText(entry_frame,2,1,3,2,2,(tk.N,tk.W,tk.S,tk.E))
-
-  btnAdd=maingui.createButton(entry_frame,"Add",6,3,0,1,(5,2),2)
-  btnEdit=maingui.createButton(entry_frame,"Edit",6,3,1,1,2,2)
-  btnShow=maingui.createButton(entry_frame,"Show",6,3,2,1,2,2)
-  btnDelete=maingui.createButton(entry_frame,"Delete",6,3,3,1,2,2)
+  btnAdd=maingui.createButton(entry_frame,"Add",6,3,0,1,(5,2),2,"Add")
+  btnEdit=maingui.createButton(entry_frame,"Edit",6,3,1,1,2,2,"Edit")
+  btnShow=maingui.createButton(entry_frame,"Show",6,3,2,1,2,2,"Show")
+  btnDelete=maingui.createButton(entry_frame,"Delete",6,3,3,1,2,2,"Delete")
 
   result_frame=maingui.createFrame(maingui,1,0,5,5,(tk.N,tk.W,tk.S,tk.E))
   result_frame['height']=150
@@ -31,6 +33,11 @@ if __name__ == "__main__":
   yScroll=maingui.createScroll(result_frame,tk.VERTICAL,"right","y")
 
   maingui.centerWindow()
-  
+  return maingui
 
-  maingui.mainloop()
+
+""" App's entry point """
+if __name__ == "__main__":
+  appgui=showGui()
+
+  appgui.mainloop()

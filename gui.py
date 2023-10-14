@@ -6,29 +6,49 @@ class Gui(tk.Tk):
 		super().__init__()
 		self.title("Phonebook v1.0")
 		self.resizable(0,0)
-		self._name=""
-		self._email=""
-		self._phoneno=""
+		self.__name=""
+		self.__email=""
+		self.__phoneno=""
+		self.__var_entry=[]
+		self.__vent=[]
 
 		#self.mainloop()      # for debugging
 
-	def getName():
-		return self.name
+	def getName(self):
+		return self.__name
 
-	def getEmail():
-		return self.email
+	def getEmail(self):
+		return self.__email
 
-	def getPhoneNoText():
-		return self.phoneno
+	def getPhoneNo(self):
+		return self.__phoneno
 
-	def setName(name):
-		self.name=name
+	def getVarEntry(self):
+		data=[]
+		for var in self.__var_entry:
+			data.append(var.get())
+		return data
 
-	def setEmail(email):
-		self.email=email
+	def getVent(self):
+		data=[]
+		for var in self.__vent:
+			data.append(var.get())
+		return data
 
-	def setPhoneNo(phoneno):
-		self.phoneno=phoneno
+	def setName(self,name):
+		self.__name=name
+
+	def setEmail(self,email):
+		self.__email=email
+
+	def setPhoneNo(self,phoneno):
+		self.__phoneno=phoneno
+
+	def setVarEntry(self,ventry):
+		self.__var_entry.append(ventry)
+
+	def setVent(self,vent):
+		self.__vent.append(vent)
 
 	def createFrame(self,parent,row,col,px,py,align):
 		frame=tk.Frame(parent)
@@ -40,14 +60,39 @@ class Gui(tk.Tk):
 		label.grid(row=row,column=col,columnspan=colspan,padx=px,pady=py)
 		return label
 
-	def createText(self,parent,row,col,colspan,px,py,align):
-		entry=tk.Entry(parent,textvariable=tk.StringVar())
+	def createText(self,parent,row,col,colspan,px,py,align,text_var):
+		self.setVarEntry(text_var)
+		entry=tk.Entry(parent,textvariable=text_var)
 		entry.grid(row=row,column=col,columnspan=colspan,padx=px,pady=py,sticky=align)
+		self.__vent.append(entry)
 		return entry
 
-	def createButton(self,parent,name,width,row,col,colspan,px,py):
-		button=tk.Button(parent,text=name,width=width)
+	def createButton(self,parent,name,width,row,col,colspan,px,py,action_name):
+		action=None
+
+		if (action_name=="Add"):
+			action=self.saveContact
+		elif (action_name=="Edit"):
+			action=self.editContact
+		elif (action_name=="Show"):
+			action=self.showContact
+		elif (action_name=="Delete"):
+			action=self.deleteContact
+
+		button=tk.Button(parent,text=name,width=width,command=action)
 		button.grid(row=row,column=col,columnspan=colspan,padx=px,pady=py)
+		'''
+		# nok - TypeError: saveContact() takes 1 positional argument but 2 were given
+		if (action_name=="Add"):
+			button.bind("<Button>",self.saveContact)
+			button.bind("<Return>",self.saveContact)
+		elif (action_name=="Edit"):
+			button.bind("<Button>",self.editContact)
+		elif (action_name=="Show"):
+			button.bind(self.showContact)
+		elif (action_name=="Delete"):
+			button.bind(self.deleteContact)
+		'''
 		return button
 
 	def createList(self,parent,align,fill,expand):
@@ -70,11 +115,37 @@ class Gui(tk.Tk):
 		y=(hs//2)-(h//2)
 		self.geometry('+%d+%d'%(x,y))
 
-	def getNameText():
-		self.name=""
+	def getData(self):
+		#return self.getVarEntry()			# ok
+		return self.getVent()          # ok
 
-	def getEmailText():
-		self.email=""
+	def clearData(self):
+		for ent in self.__vent:
+			ent.delete(0,tk.END)
+		self.__vent[0].focus()
 
-	def getPhoneNoText():
+	def saveContact(self):
+		contact=self.getData()
+		print(f"Contact added: name={contact[0]},email={contact[1]},phoneno={contact[2]}")
+		self.clearData()
+
+	def editContact(self):
+		print(f"Contact updated")
+
+	def showContact(self):
 		self.phoneno=""
+
+	def deleteContact(self):
+		self.phoneno=""
+
+	def __sanitizeName(self,name):
+		if (name.strip()!=""):
+			pass
+
+	def __sanitizeEmail(self,email):
+		if (email.strip()!=""):
+			pass
+
+	def __sanitizePhoneNo(self,phoneno):
+		if (phoneno.strip()!=""):
+			pass
