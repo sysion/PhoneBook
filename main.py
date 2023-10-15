@@ -1,6 +1,10 @@
 from gui import Gui
 import tkinter as tk
 
+# RuntimeError: Too early to create variable: no default root window
+#name=tk.StringVar()
+#or name=tk.Variable(value="")
+
 name=""
 email=""
 phoneno=""
@@ -27,7 +31,7 @@ def showGui():
 
   result_frame=maingui.createFrame(maingui,1,0,5,5,(tk.N,tk.W,tk.S,tk.E))
   result_frame['height']=150
-  result_frame['background']="#0000ff"
+  #result_frame['background']="#0000ff"
 
   lstResult=maingui.createList(result_frame,"left","both",True)
   yScroll=maingui.createScroll(result_frame,tk.VERTICAL,"right","y")

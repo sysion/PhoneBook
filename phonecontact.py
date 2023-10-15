@@ -54,46 +54,39 @@ class PhoneContact:
     query="INSERT INTO tblphonecontact (name,email,phoneno) VALUES (?,?,?)"
     cursor=dbconn.cursor()
 
+    if name==None or email==None or phoneno==None:
+      return -4
+
     try:
       cursor.execute(query,(name,email,phoneno))
       dbconn.commit()
       cursor.close()
-      print("Contact saved to database")
+      return 1
     except Error as e:
-      if ('UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e)):
-        print('Phone number already in database, nothing to save')
-        return
-      elif ('UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e)):
-        print('Email already in database, nothing to save')
-        return
+      if 'UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e):
+        return -1
+      elif 'UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e):
+        return -2
       else:
-        print('Unknown error when saving contact')
-        return
+        return -3
 
   """ Edit contact and update database with changes """
-  def editPhoneContact(self,name):
-    cid=-1
-    rows=self._checkName(name)
-    
-    if (len(rows)==1):
-      cid=rows[0][0]
-      self._updateChanges(rows[0],cid)
-    elif (len(rows)>1):
-      nrow=self._selectContact(rows)
-      cid=nrow[0]
-      self._updateChanges(nrow,cid)
+  def editPhoneContact(self,record,id):    
+    if not id==-1:
+      response=self._updateChanges(record,id)
+      return response
     else:
-      print("Phone contact not in database, nothing to edit")
-      return
+      return -5
 
   """ Delete unwanted contact and update database with changes """
+  '''
   def deletePhoneContact(self,name):
     cid=-1
     rows=self._checkName(name)
 
-    if (len(rows)==1):
+    if len(rows)==1:
       cid=rows[0][0]
-    elif (len(rows)>1):
+    elif len(rows)>1:
       nrow=self._selectContact(rows)
       cid=nrow[0]
     else:
@@ -110,6 +103,19 @@ class PhoneContact:
     except Error as e:
       print(str(e))
       return
+  '''
+  def deletePhoneContact(self,cid):
+    query="DELETE FROM tblphonecontact WHERE _id=?"
+    cursor=dbconn.cursor()
+    try:
+      cursor.execute(query,(cid,))
+      dbconn.commit()
+      cursor.close()
+      print("Contact deleted from database")
+      return 1
+    except Error as e:
+      print(str(e))
+      return -2
 
   """ Display All contacts in database or only specified contact """
   def showPhoneContact(self,name):
@@ -117,13 +123,10 @@ class PhoneContact:
     query="SELECT * FROM tblphonecontact WHERE name=?"
     cursor=dbconn.cursor()
 
-    if (name=="All"):
-      for row in cursor.execute(queryAll):
-        print(row)
+    if name=="All":
+      return cursor.execute(queryAll)
     else:
-      for row in cursor.execute(query,(name,)):
-        print(row)
-
+      return cursor.execute(query,(name,))
     cursor.close()
 
   """ Check if contact's phone number exists in database """
@@ -146,97 +149,21 @@ class PhoneContact:
 
     return rows
 
-  """ Prompt for changes to be made while editing phone contact """
-  def _getChanges(self,name,email,phoneno):
-    input_msg="""
-    ###################################################################################
-    #  Type contact's name, email and phone number on a line when prompted.           #
-    #                                                                                 #
-    #  Accept displayed option by pressing Enter key.                                 #
-    ###################################################################################\n"""
-    print(input_msg)
-   
-    cname=input(f" Enter contact's name [{name}]: ")
-    if (cname.strip()==""):
-      cname=name
-    else:
-      cname=cname.strip()
-
-    cemail=input(f" Enter contact's email [{email}]: ")
-    if (cemail.strip()==""):
-      cemail=email
-    else:
-      cemail=cemail.strip()
-
-    cphoneno=input(f" Enter contact's phoneno [{phoneno}]: ")
-    if (cphoneno.strip()==""):
-      cphoneno=phoneno
-    else:
-      cphoneno=cphoneno.strip()
-
-    if (cname==name and cemail==email and cphoneno==phoneno):
-      return ""
-    else: 
-      return (cname,cemail,cphoneno)
-
-  """ Enables user to select the phone contact to edit or delete """
-  def _selectContact(self,contacts):
-    select_msg="""
-    ###################################################################################
-    #           Select phone contact e.g. 1, 2 or 3 . . .                             #
-    ###################################################################################\n"""
-
-    e_msg="    ###################################################################################\n"
-
-    count=0
-
-    for contact in contacts:
-      count+=1
-      row_msg=f"    #         {count}. {contact[1],contact[2],contact[3]}\n" 
-      select_msg+=row_msg
-    
-    select_msg+=e_msg
-    print(select_msg)
-
-    choice=-1
-    while (choice<0 or choice>count):
-      try:
-        choice=input("Enter choice: ")
-        choice=choice.strip()
-        if (choice==""):
-          choice=-1
-          print('Invalid choice . . .\n')
-        else:
-          choice=eval(choice)
-      except Error as e:
-        print(str(e))
-
-    choice-=1
-    return (contacts[choice])
-
   def _updateChanges(self,row,cid):
-    ncontact=self._getChanges(row[1],row[2],row[3])
-
-    if (ncontact==""):
-      print('Changes not made, nothing to update')
-      return
-      
     query="UPDATE tblphonecontact SET name=?,email=?,phoneno=? WHERE _id=?"
     cursor=dbconn.cursor()
     try:
-      cursor.execute(query,(ncontact[0],ncontact[1],ncontact[2],cid))
+      cursor.execute(query,(row[0],row[1],row[2],cid))
       dbconn.commit()
       cursor.close()
-      print("Contact updated in database")
+      return 1
     except Error as e:
-      if ('UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e)):
+      if 'UNIQUE constraint' in str(e) and 'tblphonecontact.phoneno' in str(e):
         print('Phone number already in database, nothing to update')
-        return
-      elif ('UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e)):
+        return -2
+      elif 'UNIQUE constraint' in str(e) and 'tblphonecontact.email' in str(e):
         print('Email already in database, nothing to update')
-        return
+        return -3
       else:
         print('Unknown error when updating contact')
-        return    
-    
-    
+        return -4   
