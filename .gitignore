@@ -1,5 +1,5 @@
 research/
-db/phonebookfile.db
+db/phonebook.db
 db/__pycache__/
 db/tblphonecontact.sql
 __pycache__/

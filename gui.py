@@ -1,4 +1,6 @@
 import tkinter as tk
+import tkinter.ttk as ttk
+import tkinter.font as tkFont
 import tkinter.messagebox as msg
 from phonecontact import PhoneContact
 
@@ -84,6 +86,8 @@ class Gui(tk.Tk):
 			action=self.showContact
 		elif (action_name=="Delete"):
 			action=self.deleteContact
+		elif (action_name=="Clear"):
+			action=self.clearRecord
 
 		button=tk.Button(parent,text=name,width=width,command=action)
 		button.grid(row=row,column=col,columnspan=colspan,padx=px,pady=py)
@@ -95,6 +99,45 @@ class Gui(tk.Tk):
 		self.__list.pack(side=align,fill=fill,expand=expand)
 		self.__list.bind("<<ListboxSelect>>",self.listItemSelected) # required 'event' parameter provided by "<<ListboxSelect>>"
 				
+		return self.__list
+
+	def createList2(self,parent,align,fill,expand):
+		list_header = ['Id','Name','Email','PhoneNo']
+		self.__list=ttk.Treeview(columns=list_header,show="headings",selectmode=tk.BROWSE) # only SINGLE selection allowed
+		ysb=ttk.Scrollbar(orient="vertical",command=self.__list.yview)
+		xsb=ttk.Scrollbar(orient="horizontal",command=self.__list.xview)
+		ysb.pack(side="right",fill=fill,in_=parent)
+		xsb.pack(side="bottom",fill=fill,in_=parent)
+		self.__list.configure(yscrollcommand=ysb.set,xscrollcommand=xsb.set)
+		self.__list.bind("<<TreeviewSelect>>",self.listItemSelected)
+		#self.__list.grid(in_=parent)
+		self.__list.pack(in_=parent,side=align,fill=fill,expand=expand)
+		self.__list.bind("<Motion>","break")   # prevent resizing of column headers
+		
+		'''colwidth=30
+		for col in list_header:
+			self.__list.heading(col,text=col.title())
+			self.__list.column(col,minwidth=colwidth,width=colwidth,anchor='center',stretch=False)
+			#if col=='Id':
+			#	colwidth=3
+			#self.__list.column(col,width=colwidth,anchor="center")'''
+
+		
+		for col in list_header:
+			self.__list.heading(col,text=col.title())
+			self.__list.column(col,width=tkFont.Font().measure(col.title()),anchor="center")
+		
+
+		'''#self.__list.pack() # run this first, else winfo_reqwidth()/winfo_reqheight() returns 1
+		size=self.__list.winfo_reqwidth()
+		#print(f'tree-width = {size}')
+		#print('tree-width = ', size/4)
+		header_width = [40,110,110,110]
+		for i,col in enumerate(list_header):
+			#print(f'index = {i}, column = {col}')
+			self.__list.heading(col,text=col.title())
+			self.__list.column(col,minwidth=header_width[i],width=header_width[i],anchor='center',stretch=False)'''
+			
 		return self.__list
 
 	def createScroll(self,parent,orient,align,fill):
@@ -129,23 +172,49 @@ class Gui(tk.Tk):
 	def clearData(self):
 		for ent in self.__vent:
 			ent.delete(0,tk.END)
+		self.__current_record_id=-1
 		self.__vent[0].focus()
 
+	def clearEntryTest(self,index):
+		self.__vent[index].delete(0,tk.END)
+		self.__vent[index].focus()
+
 	def clearList(self):
-		if self.__list.size()>0:
-			self.__list.delete(0,tk.END)
+		#if self.__list.size()>0:               						# for tk.Listbox
+		#	self.__list.delete(0,tk.END)          						# for tk.Listbox
+		self.__list.delete(*self.__list.get_children())	  	# for ttk.Treeview
 
 	def listItemSelected(self,event):
-		index=self.__list.curselection()
-		selection=self.__list.get(index)
-		self.__current_record_id=selection[0]
-		
-		i=1
-		for ent in self.__vent:
-			ent.delete(0,tk.END)
-			ent.insert(0,selection[i])
-			i+=1
+		'''
+		index=self.__list.curselection()										# for tk.Listbox
 
+		if len(index)==1:
+			selection=self.__list.get(index)
+			self.__current_record_id=selection[0]
+			
+			i=1
+			for ent in self.__vent:
+				ent.delete(0,tk.END)
+				ent.insert(0,selection[i])
+				i+=1
+		'''
+		auto_id=self.__list.selection()														# for ttk.Treeview
+		item=self.__list.item(auto_id)
+		#print(f"listItemSelected->item = {item}")
+		selection=item['values']
+		#print(f"listItemSelected->selection = {selection}")
+		if len(selection)==4:
+			self.__current_record_id=selection[0]
+				
+			i=1
+			for ent in self.__vent:
+				ent.delete(0,tk.END)
+				if i==3:
+					ent.insert(0,"0"+str(selection[i]))
+				else:
+					ent.insert(0,selection[i])
+				i+=1
+		
 		self.__vent[0].focus()
 
 	def saveContact(self):
@@ -165,7 +234,8 @@ class Gui(tk.Tk):
 		elif status==-4:
 			msg.showinfo("Failure","Incomplete contact Information")
 
-		self.clearData()
+		#self.clearData()
+		self.clearRecord()
 
 	def editContact(self):
 		self.clearList()
@@ -186,7 +256,8 @@ class Gui(tk.Tk):
 		elif status==-5:
 			msg.showinfo("Information","Phone contact not in database, nothing to edit")
 
-		self.clearData()
+		#self.clearData()
+		self.clearRecord()
 
 	def showContact(self):
 		self.clearList()
@@ -205,27 +276,32 @@ class Gui(tk.Tk):
 			rows=pc.showPhoneContact(option)
 			i=0
 			for row in rows:
-				self.__list.insert(i,row)
-				i+=1
+				#self.__list.insert(i,row)                 # for tk.Listbox
+				#i+=1
+				self.__list.insert('',tk.END,value=row)    # for ttk.Treeview
 			
 		self.clearData()
 
 	def deleteContact(self):
 		self.clearList()
-		#contact=self.getData()
+		#print(f"self.__current_record_id = {self.__current_record_id}")
 
 		if self.__current_record_id==-1:
 			msg.showinfo("Information","Phone contact not in database, nothing to delete")
-			return
+		else:
+			pc=PhoneContact()
+			status=pc.deletePhoneContact(self.__current_record_id)
 
-		pc=PhoneContact()
-		status=pc.deletePhoneContact(self.__current_record_id)
+			if status==1:
+				msg.showinfo("Success","Contact deleted from database")
+			elif status==-2:
+				msg.showinfo("Failure","Error deleting contact")
 
-		if status==1:
-			msg.showinfo("Success","Contact deleted from database")
-		elif status==-2:
-			msg.showinfo("Failure","Error deleting contact")
+		#self.clearData()
+		self.clearRecord()
 
+	def clearRecord(self):
+		self.clearList()
 		self.clearData()
 
 	def __sanitizeName(self,name):
@@ -241,4 +317,8 @@ class Gui(tk.Tk):
 	def __sanitizePhoneNo(self,phoneno):
 		if phoneno.strip()!="":
 			phoneno=phoneno.strip()
-			return phoneno
+			if len(phoneno)>=11 and len(phoneno)<=14:
+				return phoneno
+			else:
+				#msg.showinfo("Invalid Number","Invalid Phone number")
+				self.clearEntryTest(2)
