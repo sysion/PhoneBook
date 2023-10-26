@@ -9,6 +9,9 @@ class Gui(tk.Tk):
 	def __init__(self):
 		super().__init__()
 		self.title("Phonebook v1.0")
+		self.icon_16=tk.PhotoImage(file='pbicon-16.png')
+		self.icon_32=tk.PhotoImage(file='pbicon-32.png')
+		self.iconphoto(True,self.icon_16,self.icon_32)
 		self.resizable(0,0)
 		self.__name=""
 		self.__email=""
@@ -19,8 +22,6 @@ class Gui(tk.Tk):
 		self.__list=None
 		self.__listvar=[]
 		self.__scroll=None
-
-		#self.mainloop()      # for debugging
 
 	def getName(self):
 		return self.__name
@@ -95,49 +96,21 @@ class Gui(tk.Tk):
 		return button
 
 	def createList(self,parent,align,fill,expand):
-		self.__list=tk.Listbox(parent,listvariable=self.__listvar,selectmode=tk.SINGLE,exportselection=False)
-		self.__list.pack(side=align,fill=fill,expand=expand)
-		self.__list.bind("<<ListboxSelect>>",self.listItemSelected) # required 'event' parameter provided by "<<ListboxSelect>>"
-				
-		return self.__list
-
-	def createList2(self,parent,align,fill,expand):
 		list_header = ['Id','Name','Email','PhoneNo']
-		self.__list=ttk.Treeview(columns=list_header,show="headings",selectmode=tk.BROWSE) # only SINGLE selection allowed
+		self.__list=ttk.Treeview(columns=list_header,show="headings",selectmode=tk.BROWSE) 
 		ysb=ttk.Scrollbar(orient="vertical",command=self.__list.yview)
 		xsb=ttk.Scrollbar(orient="horizontal",command=self.__list.xview)
 		ysb.pack(side="right",fill=fill,in_=parent)
 		xsb.pack(side="bottom",fill=fill,in_=parent)
 		self.__list.configure(yscrollcommand=ysb.set,xscrollcommand=xsb.set)
 		self.__list.bind("<<TreeviewSelect>>",self.listItemSelected)
-		#self.__list.grid(in_=parent)
 		self.__list.pack(in_=parent,side=align,fill=fill,expand=expand)
-		self.__list.bind("<Motion>","break")   # prevent resizing of column headers
-		
-		'''colwidth=30
-		for col in list_header:
-			self.__list.heading(col,text=col.title())
-			self.__list.column(col,minwidth=colwidth,width=colwidth,anchor='center',stretch=False)
-			#if col=='Id':
-			#	colwidth=3
-			#self.__list.column(col,width=colwidth,anchor="center")'''
-
-		
+		self.__list.bind("<Motion>","break") 
+				
 		for col in list_header:
 			self.__list.heading(col,text=col.title())
 			self.__list.column(col,width=tkFont.Font().measure(col.title()),anchor="center")
-		
-
-		'''#self.__list.pack() # run this first, else winfo_reqwidth()/winfo_reqheight() returns 1
-		size=self.__list.winfo_reqwidth()
-		#print(f'tree-width = {size}')
-		#print('tree-width = ', size/4)
-		header_width = [40,110,110,110]
-		for i,col in enumerate(list_header):
-			#print(f'index = {i}, column = {col}')
-			self.__list.heading(col,text=col.title())
-			self.__list.column(col,minwidth=header_width[i],width=header_width[i],anchor='center',stretch=False)'''
-			
+					
 		return self.__list
 
 	def createScroll(self,parent,orient,align,fill):
@@ -157,8 +130,6 @@ class Gui(tk.Tk):
 		self.geometry('+%d+%d'%(x,y))
 
 	def getData(self):
-		#return self.getVarEntry()			# ok
-		#return self.getVent()          # ok
 		sdata=[]
 		contact=self.getVent()
 		sname=self.__sanitizeName(contact[0])
@@ -174,35 +145,15 @@ class Gui(tk.Tk):
 			ent.delete(0,tk.END)
 		self.__current_record_id=-1
 		self.__vent[0].focus()
-
-	def clearEntryTest(self,index):
-		self.__vent[index].delete(0,tk.END)
-		self.__vent[index].focus()
-
+		
 	def clearList(self):
-		#if self.__list.size()>0:               						# for tk.Listbox
-		#	self.__list.delete(0,tk.END)          						# for tk.Listbox
-		self.__list.delete(*self.__list.get_children())	  	# for ttk.Treeview
+		self.__list.delete(*self.__list.get_children())	 
 
 	def listItemSelected(self,event):
-		'''
-		index=self.__list.curselection()										# for tk.Listbox
-
-		if len(index)==1:
-			selection=self.__list.get(index)
-			self.__current_record_id=selection[0]
-			
-			i=1
-			for ent in self.__vent:
-				ent.delete(0,tk.END)
-				ent.insert(0,selection[i])
-				i+=1
-		'''
-		auto_id=self.__list.selection()														# for ttk.Treeview
+		auto_id=self.__list.selection()													
 		item=self.__list.item(auto_id)
-		#print(f"listItemSelected->item = {item}")
 		selection=item['values']
-		#print(f"listItemSelected->selection = {selection}")
+		
 		if len(selection)==4:
 			self.__current_record_id=selection[0]
 				
@@ -234,7 +185,6 @@ class Gui(tk.Tk):
 		elif status==-4:
 			msg.showinfo("Failure","Incomplete contact Information")
 
-		#self.clearData()
 		self.clearRecord()
 
 	def editContact(self):
@@ -256,7 +206,6 @@ class Gui(tk.Tk):
 		elif status==-5:
 			msg.showinfo("Information","Phone contact not in database, nothing to edit")
 
-		#self.clearData()
 		self.clearRecord()
 
 	def showContact(self):
@@ -276,15 +225,12 @@ class Gui(tk.Tk):
 			rows=pc.showPhoneContact(option)
 			i=0
 			for row in rows:
-				#self.__list.insert(i,row)                 # for tk.Listbox
-				#i+=1
-				self.__list.insert('',tk.END,value=row)    # for ttk.Treeview
+				self.__list.insert('',tk.END,value=row) 
 			
 		self.clearData()
 
 	def deleteContact(self):
 		self.clearList()
-		#print(f"self.__current_record_id = {self.__current_record_id}")
 
 		if self.__current_record_id==-1:
 			msg.showinfo("Information","Phone contact not in database, nothing to delete")
@@ -297,7 +243,6 @@ class Gui(tk.Tk):
 			elif status==-2:
 				msg.showinfo("Failure","Error deleting contact")
 
-		#self.clearData()
 		self.clearRecord()
 
 	def clearRecord(self):
@@ -317,8 +262,7 @@ class Gui(tk.Tk):
 	def __sanitizePhoneNo(self,phoneno):
 		if phoneno.strip()!="":
 			phoneno=phoneno.strip()
-			if len(phoneno)>=11 and len(phoneno)<=14:
+			if len(phoneno)==11:
 				return phoneno
 			else:
-				#msg.showinfo("Invalid Number","Invalid Phone number")
 				self.clearEntryTest(2)

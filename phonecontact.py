@@ -78,32 +78,6 @@ class PhoneContact:
     else:
       return -5
 
-  """ Delete unwanted contact and update database with changes """
-  '''
-  def deletePhoneContact(self,name):
-    cid=-1
-    rows=self._checkName(name)
-
-    if len(rows)==1:
-      cid=rows[0][0]
-    elif len(rows)>1:
-      nrow=self._selectContact(rows)
-      cid=nrow[0]
-    else:
-      print("Phone contact not in database, nothing to delete")
-      return
-    
-    query="DELETE FROM tblphonecontact WHERE _id=?"
-    cursor=dbconn.cursor()
-    try:
-      cursor.execute(query,(cid,))
-      dbconn.commit()
-      cursor.close()
-      print("Contact deleted from database")
-    except Error as e:
-      print(str(e))
-      return
-  '''
   def deletePhoneContact(self,cid):
     query="DELETE FROM tblphonecontact WHERE _id=?"
     cursor=dbconn.cursor()
