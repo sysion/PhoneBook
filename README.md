@@ -1,4 +1,4 @@
-# Phonebook CLI App  #
+# Phonebook GUI App  #
 
 A sample GUI (Tkinter) python OOP CRUD project using sqlite database.
 
